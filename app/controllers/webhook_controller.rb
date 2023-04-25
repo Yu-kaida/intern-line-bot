@@ -2,6 +2,7 @@ require 'line/bot'
 
 class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
+  
 
   def client
     @client ||= Line::Bot::Client.new { |config|
@@ -11,6 +12,12 @@ class WebhookController < ApplicationController
   end
 
   def callback
+    # binding.irb
+    vocalo = VocaDbApiClient.new
+    vocalo_info = vocalo.get_random_song_info
+    #artist = vocalo_info.artist
+    #song_name = vocalo_info.song_name
+
     body = request.body.read
 
     signature = request.env['HTTP_X_LINE_SIGNATURE']
@@ -25,15 +32,9 @@ class WebhookController < ApplicationController
         case event.type
         when Line::Bot::Event::MessageType::Text
           if event.message['text'].include?('おすすめ教えて')
-            message = {
-              type: 'text',
-              text: '今回のおすすめはこちらです'
-            }
+            message = text_message("今回のおすすめはこちらです\n アーティスト:\n#{vocalo_info}\n 楽曲名:\n#{vocalo_info}")
           else
-            message = {
-              type: 'text',
-              text: '「おすすめ教えて」と入力してください！'
-            }
+            message = text_message("「おすすめ教えて」と入力してください！")
           end
           client.reply_message(event['replyToken'], message)
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
@@ -44,5 +45,13 @@ class WebhookController < ApplicationController
       end
     }
     head :ok
+  end
+
+  private
+  def text_message(text)
+    {
+      type: "text",
+      text: 
+    }
   end
 end
