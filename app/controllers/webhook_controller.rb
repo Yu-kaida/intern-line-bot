@@ -24,10 +24,17 @@ class WebhookController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          message = {
-            type: 'text',
-            text: event.message['text']
-          }
+          if event.message['text'].include?('おすすめ教えて')
+            message = {
+              type: 'text',
+              text: '今回のおすすめはこちらです'
+            }
+          else
+            message = {
+              type: 'text',
+              text: '「おすすめ教えて」と入力してください！'
+            }
+          end
           client.reply_message(event['replyToken'], message)
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
