@@ -14,9 +14,8 @@ class WebhookController < ApplicationController
   def callback
     # binding.irb
     vocalo = VocaDbApiClient.new
-    vocalo_info = vocalo.get_random_song_info
-    #artist = vocalo_info.artist
-    #song_name = vocalo_info.song_name
+    artist = vocalo.get_random_artist
+    song_name = vocalo.get_random_song
 
     body = request.body.read
 
@@ -32,7 +31,7 @@ class WebhookController < ApplicationController
         case event.type
         when Line::Bot::Event::MessageType::Text
           if event.message['text'].include?('おすすめ教えて')
-            message = text_message("今回のおすすめはこちらです\n アーティスト:\n#{vocalo_info}\n 楽曲名:\n#{vocalo_info}")
+            message = text_message("今回のおすすめはこちらです\n\n アーティスト:\n#{artist}\n 楽曲名:\n#{song_name}")
           else
             message = text_message("「おすすめ教えて」と入力してください！")
           end
