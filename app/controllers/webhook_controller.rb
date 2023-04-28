@@ -2,7 +2,6 @@ require 'line/bot'
 
 class WebhookController < ApplicationController
   protect_from_forgery except: [:callback] # CSRF対策無効化
-  
 
   def client
     @client ||= Line::Bot::Client.new { |config|
@@ -12,10 +11,8 @@ class WebhookController < ApplicationController
   end
 
   def callback
-    # binding.irb
-    vocalo = VocaDbApiClient.new
-    artist = vocalo.get_random_artist
-    song_name = vocalo.get_random_song
+    voca_db_api_client = VocaDbApiClient.new
+    vocalo_info = voca_db_api_client.get_random_song
 
     body = request.body.read
 
@@ -31,7 +28,7 @@ class WebhookController < ApplicationController
         case event.type
         when Line::Bot::Event::MessageType::Text
           if event.message['text'].include?('おすすめ教えて')
-            message = text_message("今回のおすすめはこちらです\n\n アーティスト:\n#{artist}\n 楽曲名:\n#{song_name}")
+            message = text_message("今回のおすすめはこちらです\n\n アーティスト:\n#{vocalo_info[:artist]}\n 楽曲名:\n#{vocalo_info[:song_name]}")
           else
             message = text_message("「おすすめ教えて」と入力してください！")
           end
