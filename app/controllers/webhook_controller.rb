@@ -25,15 +25,15 @@ class WebhookController < ApplicationController
         case event.type
         when Line::Bot::Event::MessageType::Text
           if event.message['text'].include?('おすすめ教えて')
-            message = {
-              type: 'text',
-              text: '今回のおすすめはこちらです'
-            }
+            voca_db_api_client = VocaDbApiClient.new
+            vocalo_info = voca_db_api_client.get_random_song
+            if vocalo_info.keys.include?(:error_message)
+              message = text_message(vocalo_info[:error_message])
+            else
+              message = text_message("今回のおすすめはこちらです\n\n アーティスト:\n#{vocalo_info[:artist]}\n 楽曲名:\n#{vocalo_info[:song_name]}")
+            end
           else
-            message = {
-              type: 'text',
-              text: '「おすすめ教えて」と入力してください！'
-            }
+            message = text_message("「おすすめ教えて」と入力してください！")
           end
           client.reply_message(event['replyToken'], message)
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
@@ -44,5 +44,13 @@ class WebhookController < ApplicationController
       end
     }
     head :ok
+  end
+
+  private
+  def text_message(text)
+    {
+      type: "text",
+      text: 
+    }
   end
 end
