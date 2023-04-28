@@ -1,6 +1,4 @@
 class VocaDbApiClient
-  # IDに相当する整数を生成する
-  # 2023年4月22日までの楽曲をカバー
   def initialize
     @base_url = "https://vocadb.net/api"
   end
