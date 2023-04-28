@@ -11,9 +11,6 @@ class WebhookController < ApplicationController
   end
 
   def callback
-    voca_db_api_client = VocaDbApiClient.new
-    vocalo_info = voca_db_api_client.get_random_song
-
     body = request.body.read
 
     signature = request.env['HTTP_X_LINE_SIGNATURE']
@@ -28,6 +25,8 @@ class WebhookController < ApplicationController
         case event.type
         when Line::Bot::Event::MessageType::Text
           if event.message['text'].include?('おすすめ教えて')
+            voca_db_api_client = VocaDbApiClient.new
+            vocalo_info = voca_db_api_client.get_random_song
             message = text_message("今回のおすすめはこちらです\n\n アーティスト:\n#{vocalo_info[:artist]}\n 楽曲名:\n#{vocalo_info[:song_name]}")
           else
             message = text_message("「おすすめ教えて」と入力してください！")
