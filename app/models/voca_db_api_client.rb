@@ -10,9 +10,12 @@ class VocaDbApiClient
     case response
     when Net::HTTPSuccess
       res = JSON.parse(response.body)
+      
+      search_query = URI.encode_www_form({search_query: "#{res['name']}+#{res['artistString']}"})
       {
         artist: res["artistString"],
-        song_name: res["name"]
+        song_name: res["name"],
+        url: "https://www.youtube.com/results?#{search_query}"
       }
     else
       {
