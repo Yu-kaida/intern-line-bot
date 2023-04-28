@@ -27,7 +27,11 @@ class WebhookController < ApplicationController
           if event.message['text'].include?('おすすめ教えて')
             voca_db_api_client = VocaDbApiClient.new
             vocalo_info = voca_db_api_client.get_random_song
-            message = text_message("今回のおすすめはこちらです\n\n アーティスト:\n#{vocalo_info[:artist]}\n 楽曲名:\n#{vocalo_info[:song_name]}")
+            if vocalo_info.keys.include?(:error_message)
+              message = text_message(vocalo_info[:error_message])
+            else
+              message = text_message("今回のおすすめはこちらです\n\n アーティスト:\n#{vocalo_info[:artist]}\n 楽曲名:\n#{vocalo_info[:song_name]}")
+            end
           else
             message = text_message("「おすすめ教えて」と入力してください！")
           end

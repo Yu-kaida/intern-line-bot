@@ -17,7 +17,9 @@ class VocaDbApiClient
         song_name: res["name"]
       }
     else
-      puts "Error"
+      {
+        error_message: "曲の取得に失敗しました。\nもう一度実行してください。"
+      }
     end
   end
 end
